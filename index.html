@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#1f4e5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Отзыв">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Конструктор отзыва · уроки таджвида</title>
+<style>
+:root{
+  --bg:#f3f7f8; --ink:#17323c; --muted:#5b7580; --head:#1f4e5f; --teal:#1f4e5f;
+  --orange:#dc6428; --tint:#e3eef1; --card:#ffffff; --line:#b6cbd1; --mark:#ffe08a;
+  --bar:#ffffff; --shadow:0 8px 28px rgba(15,40,50,.18);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1b21; --ink:#e5eef1; --muted:#93aab3; --head:#9fd0df; --teal:#2b6a80;
+    --orange:#e67a3c; --tint:#17303a; --card:#12252d; --line:#3d6070; --mark:#6b5200;
+    --bar:#152932; --shadow:0 8px 28px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1b21; --ink:#e5eef1; --muted:#93aab3; --head:#9fd0df; --teal:#2b6a80;
+  --orange:#e67a3c; --tint:#17303a; --card:#12252d; --line:#3d6070; --mark:#6b5200;
+  --bar:#152932; --shadow:0 8px 28px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Segoe UI","Helvetica Neue",Arial,"Noto Sans",sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+
+.hd{position:sticky;top:0;z-index:5;background:var(--bar);border-bottom:1px solid var(--line);
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;display:flex;align-items:baseline;gap:10px;justify-content:space-between}
+.hd h1{margin:0;font-size:18px;color:var(--head)}
+#prog{font-size:13px;color:var(--muted);white-space:nowrap}
+main{max-width:720px;margin:0 auto;padding:12px 12px calc(env(safe-area-inset-bottom,0px) + 110px)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.card label.lbl{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+input[type=text],textarea{display:block;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:16px}
+textarea{resize:none;min-height:66px;line-height:1.45}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid var(--orange);outline-offset:1px}
+
+.sh{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.badge{flex:none;width:30px;height:30px;border-radius:50%;background:var(--orange);color:#fff;font-weight:700;display:grid;place-items:center}
+.sh .t{font-weight:700;color:var(--head);font-size:17px;line-height:1.25}
+.sh .h{font-size:13px;color:var(--muted)}
+.step.done .badge{background:var(--teal)}
+.pk{display:block;width:100%;text-align:left;margin:0 0 8px;padding:10px 12px;border-radius:12px;border:1.5px dashed var(--line);background:var(--bg);cursor:pointer}
+.pk .l{display:block;font-size:12px;color:var(--muted)}
+.pk .v{display:block;font-size:15px}
+.pk.on{border:1.5px solid var(--head);background:var(--tint)}
+.pk .v.ph{color:var(--head);font-weight:600}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:6px;font-size:13px}
+.lk{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:6px 0;font-size:13px}
+.chk{display:flex;align-items:flex-start;gap:8px;font-size:14px;margin:0 0 10px}
+.chk input{width:20px;height:20px;margin-top:2px;flex:none}
+
+#pv{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:80px}
+#pv.empty{color:var(--muted)}
+mark{background:var(--mark);color:inherit;border-radius:4px;padding:0 2px}
+#note{font-size:13px;color:var(--muted);margin:0 0 8px}
+
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--bar);border-top:1px solid var(--line);display:flex;gap:8px;
+  padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 10px);justify-content:center}
+.bar .in{display:flex;gap:8px;width:100%;max-width:720px}
+.btn{min-height:46px;padding:8px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer;white-space:nowrap}
+.btn.pri{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:700;flex:1}
+.btn.warn{border-color:var(--orange);color:var(--orange)}
+
+.ov{position:fixed;inset:0;z-index:20;background:rgba(8,20,25,.5);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:min(640px,100%);height:min(86%,760px);display:flex;flex-direction:column;background:var(--bar);border-radius:18px 18px 0 0;box-shadow:var(--shadow)}
+@media (min-width:700px){.ov{align-items:center}.sheet{border-radius:18px}}
+.sheet header{padding:14px 14px 8px}
+.sheet h2{margin:0 0 8px;font-size:16px;color:var(--head)}
+.sheet .top{display:flex;gap:8px}
+.sheet .top #shQ{flex:1;min-width:0}
+.hint{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.sheet .top .btn{min-height:44px}
+#list{flex:1;overflow:auto;padding:0 10px calc(env(safe-area-inset-bottom,0px) + 12px)}
+details{border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--card)}
+summary{padding:12px;cursor:pointer;font-weight:600;color:var(--head);list-style:none;display:flex;justify-content:space-between;gap:8px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"▾";color:var(--muted)}
+details[open] summary::after{content:"▴"}
+summary small{color:var(--muted);font-weight:400}
+.it{display:block;width:100%;text-align:left;padding:11px 12px;border:0;border-top:1px solid var(--line);background:none;cursor:pointer;font-size:15px}
+.it:hover{background:var(--tint)}
+.it.on{background:var(--tint);font-weight:600}
+.it .ld{color:var(--muted);font-weight:400}
+.none{padding:20px;text-align:center;color:var(--muted)}
+#toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(env(safe-area-inset-bottom,0px) + 84px);z-index:40;
+  background:var(--head);color:var(--bg);padding:8px 14px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:88%;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="hd"><h1>Конструктор отзыва</h1><span id="prog"></span></div>
+<main>
+  <section class="card">
+    <label class="lbl" for="name">Имя ученицы</label>
+    <input id="name" type="text" placeholder="Например, Аиша" autocomplete="off">
+  </section>
+  <div id="steps"></div>
+  <section class="card">
+    <div class="sh"><div class="t">Готовый отзыв</div></div>
+    <p id="note"></p>
+    <div id="pv" class="empty"></div>
+  </section>
+</main>
+
+<div class="bar"><div class="in">
+  <button class="btn pri" id="bCopy">Скопировать отзыв</button>
+  <button class="btn" id="bShare" hidden>Отправить</button>
+  <button class="btn" id="bReset">Очистить</button>
+</div></div>
+
+<div class="ov" id="ov" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shT">
+    <header>
+      <h2 id="shT"></h2>
+      <div class="top">
+        <input id="shQ" type="text" placeholder="Найти фразу…" autocomplete="off">
+        <button class="btn" id="shClose" aria-label="Закрыть">✕</button>
+      </div>
+      <div class="top" style="margin-top:8px">
+        <button class="btn" id="shClear" hidden>Убрать выбор</button>
+        <button class="btn pri" id="shDone" hidden>Готово</button>
+      </div>
+      <p id="shHint" class="hint" hidden></p>
+    </header>
+    <div id="list"></div>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script type="application/json" id="data">{"steps": [{"id": 1, "title": "Тёплое начало", "hint": "«Очень рады видеть…»", "pickers": [{"label": "Фраза для начала", "lead": "", "groups": [{"t": "Универсальные", "items": ["Очень рады видеть, как внимательно вы работаете над материалом 💜", "Очень рады видеть вашу внимательную и последовательную работу.", "Очень приятно видеть, с какой ответственностью вы подходите к изучению таджвида.", "Нам очень приятно видеть вашу работу над сегодняшним заданием.", "Рады видеть, как осознанно вы подходите к отработке материала.", "Очень ценно видеть вашу внимательность к деталям произношения.", "Хочется отметить вашу внимательную работу над сегодняшним материалом.", "Особенно приятно видеть вашу включённость в процесс обучения.", "Очень радует ваша последовательность в работе над чтением.", "Видно, что вы внимательно подошли к подготовке к уроку.", "Видно, что вы уделили достаточно внимания самостоятельной практике.", "Нам приятно видеть вашу заинтересованность и стремление разобраться в материале.", "Очень хорошо, что вы продолжаете последовательно закреплять изученное.", "Рады видеть, как постепенно укрепляется ваша уверенность в чтении.", "Особенно приятно видеть ваш прогресс в работе над произношением."]}, {"t": "Когда есть прогресс", "items": ["Очень рады видеть ваш прогресс после предыдущего занятия.", "Особенно приятно заметить изменения в вашем чтении по сравнению с прошлым уроком.", "Рады видеть, что рекомендации с прошлого занятия уже нашли отражение в вашей практике.", "Очень приятно видеть, как постепенно закрепляется навык, над которым мы работали ранее.", "Видно, что предыдущая отработка дала результат.", "Радует, что вы продолжили работу над рекомендациями после прошлого урока.", "Особенно хочется отметить положительную динамику в вашем чтении.", "Приятно видеть, что то, что ещё недавно требовало внимания, сейчас получается значительно увереннее.", "Видно, что вы не оставили без внимания рекомендации с прошлого занятия.", "Очень ценно видеть, как шаг за шагом вы продвигаетесь в работе над чтением."]}, {"t": "Когда хочется подчеркнуть осознанность", "items": ["Особенно радует ваша осознанная работа с материалом.", "Очень ценно, что вы стараетесь понимать не только как читать, но и почему именно так.", "Видно, что вы постепенно переходите от простого повторения к осознанному контролю собственного чтения.", "Особенно приятно видеть, что вы начинаете самостоятельно замечать особенности своего произношения.", "Рады видеть, как внимательно вы отслеживаете качество собственного чтения.", "Очень ценно, что во время работы вы стараетесь контролировать каждый этап.", "Видно, что вы внимательно анализируете свои затруднения и стараетесь их исправлять.", "Особенно хочется отметить вашу самостоятельность в работе над ошибками.", "Нам нравится, что вы не просто повторяете образец, а стараетесь понять принцип.", "Очень хорошо, что вы постепенно формируете привычку самостоятельно контролировать своё чтение."]}, {"t": "Когда ученица старалась и тщательно подготовилась", "items": ["Видно, что вы тщательно подготовились к сегодняшнему занятию.", "Очень приятно видеть, сколько внимания вы уделили самостоятельной отработке.", "Спасибо за такую внимательную подготовку к уроку.", "Видно, что вы не ограничились выполнением задания, а дополнительно поработали над произношением.", "Очень ценно, что вы уделили время самостоятельному повторению.", "Видно, что вы подошли к заданию вдумчиво и не торопились при выполнении.", "Особенно хочется отметить вашу тщательную подготовку.", "Рады видеть, что вы уделили внимание тем моментам, которые мы обозначили на прошлом уроке.", "Видно, что вы постарались перенести рекомендации с занятия в самостоятельную практику.", "Спасибо за ответственное отношение к домашней отработке."]}, {"t": "Когда речь о чтении", "items": ["Очень рады видеть, как уверенно вы работаете с изученными буквами и харакатами.", "Рады видеть, что чтение становится более уверенным и последовательным.", "Особенно приятно видеть вашу внимательность при чтении слогов.", "Видно, что вы уже увереннее ориентируетесь в изученном материале."]}]}]}, {"id": 2, "title": "Похвала", "hint": "Что получилось хорошо → конкретное достижение", "pickers": [{"label": "Что получилось (можно выбрать несколько)", "lead": "Хочется отметить, что вы ", "multi": "list", "groups": [{"t": "Работа с буквами", "items": ["уверенно узнаёте изученные буквы", "правильно называете буквы", "различаете похожие по звучанию буквы", "определяете букву перед чтением", "самостоятельно находите нужную букву", "удерживаете внимание на форме буквы", "постепенно автоматизируете узнавание букв", "правильно соотносите букву и её звучание", "различаете мягкое и твёрдое звучание", "замечаете особенности произношения отдельных букв"]}, {"t": "Работа с огласовками", "items": ["уверенно определяете фатху", "правильно определяете кясру", "различаете основные харакаты", "сначала определяете знак, а затем переходите к чтению", "правильно соединяете букву и огласовку", "самостоятельно проговариваете алгоритм чтения", "не угадываете слог, а анализируете его состав", "последовательно разбираете слог перед чтением"]}, {"t": "Чтение", "items": ["уверенно читаете простые слоги", "правильно соединяете букву со знаком", "сохраняете правильную последовательность действий", "читаете без постоянной подсказки учителя", "постепенно увеличиваете самостоятельность", "сохраняете правильное произношение при повторении", "переносите изученное правило на новые слоги", "читаете медленно, но осознанно", "контролируете собственное чтение", "замечаете и исправляете собственную ошибку"]}, {"t": "Мадд", "items": ["правильно замечаете наличие мадда", "выдерживаете необходимую длительность", "стараетесь сохранять одинаковую продолжительность", "контролируете протяжённость звука", "различаете обычное и протяжное звучание", "постепенно делаете мадд более стабильным", "сохраняете длительность при чтении в составе слова"]}, {"t": "Твёрдые буквы", "items": ["узнаёте твёрдые буквы", "различаете твёрдое и мягкое звучание", "стараетесь сохранять полноту звука", "обращаете внимание на артикуляцию", "контролируете произношение ص، ض، ط، ظ، ق", "постепенно усиливаете твёрдость звучания", "начинаете замечать различие между мягким и твёрдым произношением"]}]}]}, {"id": 3, "title": "Наблюдение", "hint": "Что пока не получается — нейтрально, без оценки личности", "pickers": [{"label": "Точка роста", "lead": "Сейчас ", "groups": [{"t": "Если навык ещё формируется", "items": ["пока не всегда получается…", "иногда возникает затруднение при…", "в отдельных случаях появляется заминка…", "навык пока требует дополнительного закрепления", "вам ещё не всегда удаётся выполнять правильное действие самостоятельно", "при увеличении темпа возникает…", "при переходе к новому материалу появляется…", "при чтении нескольких слогов подряд наблюдается…", "вам пока требуется подсказка при…", "пока сохраняется нестабильность в…", "качество произношения пока меняется от одного повторения к другому", "вы узнаёте правило, но ещё не всегда применяете его самостоятельно", "алгоритм вам знаком, но пока требует внешней опоры", "вы понимаете правило на словах, но при чтении не всегда переносите его в действие"]}, {"t": "Для произношения", "items": ["звук пока звучит недостаточно твёрдо", "твёрдость звука сохраняется не во всех слогах", "звук иногда приближается к мягкому аналогу", "вам пока не всегда удаётся контролировать положение языка", "при соединении с харакатом качество звука меняется", "при увеличении скорости теряется точность артикуляции", "длительность звука пока получается неодинаковой", "мадд иногда получается короче или длиннее", "при чтении в составе слова теряется нужное качество звука", "отдельная буква произносится уверенно, но в слоге возникает затруднение"]}]}]}, {"id": 4, "title": "Переход + действие", "hint": "«Поэтому предлагаем…» → конкретное действие для отработки", "join": "transition", "bridge": true, "pickers": [{"label": "Переход", "lead": "", "groups": [{"t": "Перед действием", "items": ["Поэтому предлагаем…", "Здесь будет полезно…", "На следующем этапе можно…", "Сейчас особенно полезно…", "Чтобы закрепить этот навык, предлагаем…", "Чтобы сделать этот этап устойчивым, можно…", "Для дополнительной отработки попробуйте…", "Следующий шаг может быть таким:", "Предлагаем на следующем уроке…", "До следующего занятия можно…", "Для закрепления навыка можно…", "Чтобы постепенно снять зависимость от подсказки, можно…", "Чтобы усилить слуховой контроль, попробуйте…", "Чтобы улучшить артикуляцию, предлагаем…", "Чтобы вы начали выполнять действие самостоятельно, можно…"], "kind": "inf"}, {"t": "Перед последовательностью", "items": ["Хорошо сработает такая последовательность:", "Предлагаем такую последовательность:", "Попробуйте такую последовательность:"], "kind": "seq"}]}, {"label": "Конкретное действие", "lead": "", "groups": [{"t": "Повторение", "items": ["повторить каждую букву 5 раз", "прочитать каждый слог несколько раз", "чередовать правильный образец и самостоятельное чтение", "возвращаться к сложным слогам в конце отработки", "ежедневно уделять несколько минут повторению", "записать чтение и сравнить с образцом", "прослушать собственную запись", "повторить после образца учителя", "выполнить несколько повторений без образца"], "kind": "inf"}, {"t": "Самостоятельность", "items": ["послушать образец, а затем прочитать самостоятельно", "объяснить алгоритм своими словами перед чтением", "постепенно читать без подсказки", "самостоятельно найти ошибку в собственном чтении", "объяснить, почему вы выбрали именно такой вариант чтения", "применить правило к новому слогу самостоятельно"], "kind": "inf"}, {"t": "Последовательность", "items": ["буква → огласовка → слог", "буква → артикуляция → слог", "буква → огласовка → медленное чтение → самостоятельное чтение", "образец → повторение → самостоятельное чтение", "слушаем → повторяем → записываем → сравниваем"], "kind": "seq"}]}]}, {"id": 5, "title": "Предметная рекомендация", "hint": "Что именно отрабатывать: мадд, махрадж, букву, харакат, твёрдость звука", "pickers": [{"label": "Рекомендация (можно несколько)", "lead": "", "multi": "sent", "groups": [{"t": "Твёрдые буквы", "items": ["Обратите внимание на полноту звучания твёрдых букв.", "Сравните твёрдое и мягкое звучание одной пары.", "Отработайте букву сначала отдельно, затем с огласовкой и только после этого в слоге.", "Контролируйте положение задней части языка.", "Сначала почувствуйте артикуляцию, а затем произнесите звук.", "Используйте медленный темп, чтобы успевать контролировать звук.", "Запишите чтение и сравните его с образцом учителя."]}, {"t": "Мадд", "items": ["Сначала отработайте длительность отдельно.", "Используйте один и тот же слог для нескольких повторений.", "Старайтесь самостоятельно контролировать длительность.", "Сравните короткое и протяжное звучание.", "После изолированной отработки перенесите мадд в слово.", "При записи чтения обратите внимание именно на стабильность длительности."]}, {"t": "Махрадж", "items": ["Вернитесь к месту образования звука.", "Сначала произнесите букву отдельно.", "Затем добавьте харакат.", "После этого перенесите звук в слог.", "Используйте зеркало для визуального контроля, если это уместно.", "Сравните положение органов речи при правильном и ошибочном варианте."]}, {"t": "Фатха / кясра", "items": ["Сначала называйте букву.", "Затем определяйте харакат.", "После этого соединяйте их в слог.", "Проговаривайте этот алгоритм вслух.", "Постепенно отказывайтесь от словесной подсказки."]}]}, {"label": "Ваш следующий шаг — развивать… (можно несколько)", "lead": "Ваш следующий шаг — развивать ", "multi": "list", "groups": [{"t": "Навыки", "items": ["самостоятельное определение буквы", "определение хараката", "последовательное чтение слога", "различение похожих звуков", "контроль собственного произношения", "контроль положения органов речи", "правильное формирование звука", "удержание длительности мадда", "различение твёрдых и мягких букв", "самостоятельное исправление ошибки", "проговаривание алгоритма без подсказки", "перенос правила на новый материал", "чтение без угадывания", "постепенное увеличение самостоятельности", "сохранение правильного произношения при увеличении скорости", "осознанное применение правила", "слуховой самоконтроль", "артикуляционный контроль", "устойчивость правильного произношения"]}]}, {"label": "Задание в голосовом", "lead": "", "def": "В голосовом сообщении по моему примеру вы отработаете шаблон и отработаете свою ошибку.", "groups": [{"t": "Варианты", "items": ["В голосовом сообщении по моему примеру вы отработаете шаблон и отработаете свою ошибку.", "В голосовом сообщении по моему примеру отработайте, пожалуйста, шаблон и свою ошибку.", "Пожалуйста, запишите голосовое сообщение: по моему примеру отработайте шаблон, а затем свою ошибку.", "Жду ваше голосовое: по моему примеру вы отработаете шаблон и отработаете свою ошибку."]}]}]}, {"id": 6, "title": "Финал", "hint": "«Уверены, что после…» → ожидаемый результат", "pickers": [{"label": "Уверены, что после…", "lead": "Уверены, что после ", "ord": 3, "groups": [{"t": "Ожидаемый результат", "items": ["такой дополнительной отработки чтение станет более уверенным", "нескольких тренировок ваше произношение станет стабильнее", "регулярного повторения навык постепенно закрепится", "переноса алгоритма на новый материал вы станете самостоятельнее", "постепенного снятия подсказок вы сможете выполнять алгоритм самостоятельно", "работы над артикуляцией твёрдые звуки будут звучать более отчётливо", "контроля длительности мадд станет более стабильным", "повторения в медленном темпе качество чтения станет точнее", "записи собственного чтения вы сможете лучше замечать свои ошибки", "такой последовательной работы правильное произношение станет более устойчивым"]}]}, {"label": "Дополнительно: «Особенно ценно, что вы заметили…»", "lead": "Особенно ценно, что вы заметили ", "ord": 1, "groups": [{"t": "Что вы заметили", "items": ["изменение своего отношения к повторению", "важность регулярности", "роль привычных действий в обучении", "необходимость постепенно отказываться от подсказок", "связь между повторением и автоматизацией", "разницу между механическим повторением и осознанной тренировкой", "значение проговаривания алгоритма", "важность самостоятельного контроля", "необходимость замедления темпа ради качества", "связь между правильной артикуляцией и качеством чтения", "то, как этот приём помогает увидеть собственный ход мысли"]}]}, {"label": "Дополнительно: «Это показывает…»", "lead": "Это показывает, ", "ord": 2, "groups": [{"t": "Что это показывает", "items": ["что вы начинаете понимать, зачем нужен каждый приём", "что вы анализируете не только результат, но и сам процесс обучения", "что вы замечаете, как растёт ваша самостоятельность", "что вы связываете практическое действие с формированием навыка", "что вы постепенно переходите от простого выполнения приёма к пониманию, зачем он нужен", "что вы внимательно отслеживаете процесс формирования навыка", "что вы начинаете видеть свои точки роста", "что вы осознанно подходите к собственной работе"]}]}]}]}</script>
+<script>
+(function(){
+'use strict';
+const D=JSON.parse(document.getElementById('data').textContent);
+const $=s=>document.querySelector(s);
+const KEY='tajvid-builder-v2';
+const BRIDGE='Давайте теперь посмотрим, что можно немного доработать, чтобы ваше чтение стало ещё более точным и уверенным.';
+let cur=null,S=null;
+
+function up(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function fin(s){s=s.trim();return /[.!?…]$/.test(s)?s:s+'.';}
+function joinList(a){return a.length===1?a[0]:a.slice(0,-1).join(', ')+' и '+a[a.length-1];}
+function kindOf(p,v){for(const g of p.groups){if(g.items.indexOf(v)>-1)return g.kind||null;}return null;}
+
+function pieceText(p,arr){
+  if(!arr.length)return '';
+  if(p.multi==='sent')return arr.map(v=>fin(up((p.lead||'')+v))).join(' ');
+  return fin(up((p.lead||'')+(p.multi==='list'?joinList(arr):arr[0])));
+}
+function compose(i){
+  const st=D.steps[i],sel=S.steps[i].sel;
+  if(st.join==='transition'){
+    const t=sel[0][0],a=sel[1][0];
+    if(t&&a)return fin(t.replace(/…+\s*$/,'').trim()+' '+a);
+    if(t)return t;
+    if(a)return fin(up(a));
+    return '';
+  }
+  const ord=st.pickers.map((p,k)=>k).sort((x,y)=>{
+    const ox=st.pickers[x].ord!==undefined?st.pickers[x].ord:x, oy=st.pickers[y].ord!==undefined?st.pickers[y].ord:y;
+    return ox-oy;
+  });
+  return ord.map(k=>pieceText(st.pickers[k],sel[k])).filter(Boolean).join(' ');
+}
+function fresh(){
+  S={name:'',bridge:true,steps:D.steps.map(st=>({sel:st.pickers.map(p=>p.def?[p.def]:[]),text:''}))};
+  D.steps.forEach((_,i)=>{S.steps[i].text=compose(i);});
+  return S;
+}
+function load(){
+  try{
+    const j=JSON.parse(localStorage.getItem(KEY)||'null');
+    if(j&&Array.isArray(j.steps)&&j.steps.length===D.steps.length&&j.steps.every((s,i)=>Array.isArray(s.sel)&&s.sel.length===D.steps[i].pickers.length&&s.sel.every(Array.isArray)&&typeof s.text==='string'))return j;
+  }catch(e){}
+  return null;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+let tt;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2400);}
+
+function full(){
+  const parts=[];
+  const nm=S.name.trim();
+  parts.push(nm?'Здравствуйте, '+nm+'!':'Здравствуйте!');
+  let bridged=false;
+  S.steps.forEach((s,i)=>{
+    const tx=s.text.trim();
+    if(!tx)return;
+    if(i>=3&&!bridged&&S.bridge){parts.push(BRIDGE);bridged=true;}
+    parts.push(tx);
+  });
+  return parts.length>1?parts.join('\n\n'):'';
+}
+
+function autosize(ta){ta.style.height='auto';ta.style.height=Math.max(66,ta.scrollHeight+2)+'px';}
+function pickLabel(p,arr){
+  if(!arr.length)return '';
+  if(arr.length>1)return 'Выбрано фраз: '+arr.length;
+  return (p.lead||'')+arr[0];
+}
+function renderStep(i){
+  const st=D.steps[i],ss=S.steps[i];
+  const card=document.createElement('section');
+  card.className='card step'+(ss.text.trim()?' done':'');card.id='st'+i;
+  const sh=document.createElement('div');sh.className='sh';
+  const b=document.createElement('div');b.className='badge';b.textContent=String(i+1);
+  const tw=document.createElement('div');
+  const t=document.createElement('div');t.className='t';t.textContent=st.title;
+  const h=document.createElement('div');h.className='h';h.textContent=st.hint;
+  tw.appendChild(t);tw.appendChild(h);sh.appendChild(b);sh.appendChild(tw);card.appendChild(sh);
+  if(st.bridge){
+    const l=document.createElement('label');l.className='chk';
+    const c=document.createElement('input');c.type='checkbox';c.checked=S.bridge;
+    c.addEventListener('change',()=>{S.bridge=c.checked;renderPreview();save();});
+    l.appendChild(c);l.appendChild(document.createTextNode('Добавить связку «Давайте теперь посмотрим, что можно доработать…» перед рекомендациями'));
+    card.appendChild(l);
+  }
+  st.pickers.forEach((p,k)=>{
+    const arr=ss.sel[k];
+    const btn=document.createElement('button');btn.type='button';btn.className='pk'+(arr.length?' on':'');
+    const l=document.createElement('span');l.className='l';l.textContent=p.label;
+    const v=document.createElement('span');v.className='v'+(arr.length?'':' ph');
+    v.textContent=arr.length?pickLabel(p,arr):'Выбрать фразу…';
+    btn.appendChild(l);btn.appendChild(v);
+    btn.addEventListener('click',()=>openPicker(i,k));
+    card.appendChild(btn);
+  });
+  const ta=document.createElement('textarea');
+  ta.placeholder='Здесь появится текст. Его можно дописать и изменить.';ta.value=ss.text;
+  ta.addEventListener('input',()=>{ss.text=ta.value;autosize(ta);card.classList.toggle('done',!!ta.value.trim());renderPreview();save();});
+  card.appendChild(ta);
+  const row=document.createElement('div');row.className='row';
+  const clr=document.createElement('button');clr.type='button';clr.className='lk';clr.textContent='Очистить этот шаг';
+  clr.addEventListener('click',()=>{ss.sel=st.pickers.map(()=>[]);ss.text='';renderStep(i);renderPreview();save();});
+  row.appendChild(clr);card.appendChild(row);
+  const old=$('#st'+i);
+  if(old)old.replaceWith(card);else $('#steps').appendChild(card);
+  autosize(ta);
+}
+function renderPreview(){
+  const tx=full(),pv=$('#pv');
+  pv.textContent='';
+  const filled=S.steps.filter(s=>s.text.trim()).length;
+  $('#prog').textContent='Заполнено '+filled+' из '+D.steps.length;
+  if(!tx){
+    pv.className='empty';pv.textContent='Выберите фразы в карточках выше — отзыв соберётся здесь.';
+    $('#note').textContent='';return;
+  }
+  pv.className='';
+  const segs=tx.split('…');
+  segs.forEach((seg,i)=>{
+    pv.appendChild(document.createTextNode(seg));
+    if(i<segs.length-1){const m=document.createElement('mark');m.textContent='…';pv.appendChild(m);}
+  });
+  const n=segs.length-1;
+  $('#note').textContent=n?'Жёлтым отмечены незавершённые фразы («…»): допишите их в карточке шага.':'Отзыв готов — можно копировать.';
+}
+function renderAll(){
+  $('#steps').textContent='';
+  $('#name').value=S.name;
+  D.steps.forEach((_,i)=>renderStep(i));
+  renderPreview();
+}
+
+/* ---- выбор фразы ---- */
+function openPicker(i,k){
+  cur={i:i,k:k};
+  const st=D.steps[i],p=st.pickers[k];
+  $('#shT').textContent=st.title+' · '+p.label;
+  $('#shQ').value='';
+  $('#shDone').hidden=!p.multi;
+  buildList('');
+  $('#ov').hidden=false;
+}
+function closePicker(){$('#ov').hidden=true;cur=null;}
+function choose(v){
+  const i=cur.i,k=cur.k,st=D.steps[i],p=st.pickers[k],ss=S.steps[i],arr=ss.sel[k];
+  const at=arr.indexOf(v);
+  if(p.multi){if(at>-1)arr.splice(at,1);else arr.push(v);}
+  else ss.sel[k]=at>-1?[]:[v];
+  if(st.join==='transition'&&k===0&&ss.sel[1].length){
+    const tk=kindOf(st.pickers[0],ss.sel[0][0]),ak=kindOf(st.pickers[1],ss.sel[1][0]);
+    if(tk&&ak&&tk!==ak)ss.sel[1]=[];
+  }
+  ss.text=compose(i);
+  renderStep(i);renderPreview();save();
+  if(p.multi)buildList($('#shQ').value);else closePicker();
+}
+function buildList(q){
+  const st=D.steps[cur.i],p=st.pickers[cur.k],chosen=S.steps[cur.i].sel[cur.k],list=$('#list');
+  let groups=p.groups,hint='';
+  if(st.join==='transition'&&cur.k===1&&S.steps[cur.i].sel[0].length){
+    const tk=kindOf(st.pickers[0],S.steps[cur.i].sel[0][0]);
+    if(tk){groups=groups.filter(g=>g.kind===tk);hint='Показаны действия, которые подходят к выбранному переходу.';}
+  }
+  $('#shHint').textContent=hint;$('#shHint').hidden=!hint;
+  $('#shClear').hidden=!chosen.length;
+  list.textContent='';q=q.trim().toLowerCase();let any=false;
+  groups.forEach(g=>{
+    const items=g.items.filter(t=>!q||t.toLowerCase().indexOf(q)>-1);
+    if(!items.length)return;any=true;
+    const d=document.createElement('details');
+    d.open=!!q||groups.length===1||items.some(t=>chosen.indexOf(t)>-1);
+    const s=document.createElement('summary');
+    const nm=document.createElement('span');nm.textContent=g.t;
+    const c=document.createElement('small');c.textContent=String(items.length);
+    s.appendChild(nm);s.appendChild(c);d.appendChild(s);
+    items.forEach(t=>{
+      const b=document.createElement('button');b.type='button';b.className='it'+(chosen.indexOf(t)>-1?' on':'');
+      if(p.lead){const ld=document.createElement('span');ld.className='ld';ld.textContent=p.lead;b.appendChild(ld);}
+      b.appendChild(document.createTextNode(t));
+      b.addEventListener('click',()=>choose(t));
+      d.appendChild(b);
+    });
+    list.appendChild(d);
+  });
+  if(!any){const n=document.createElement('div');n.className='none';n.textContent='Ничего не найдено';list.appendChild(n);}
+}
+$('#shQ').addEventListener('input',e=>buildList(e.target.value));
+$('#shClose').addEventListener('click',closePicker);
+$('#shDone').addEventListener('click',closePicker);
+$('#ov').addEventListener('click',e=>{if(e.target.id==='ov')closePicker();});
+$('#shClear').addEventListener('click',()=>{
+  const i=cur.i,k=cur.k;S.steps[i].sel[k]=[];S.steps[i].text=compose(i);
+  renderStep(i);renderPreview();save();
+  if(D.steps[i].pickers[k].multi)buildList($('#shQ').value);else closePicker();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#ov').hidden)closePicker();});
+
+/* ---- копирование, отправка, очистка ---- */
+function copyText(s){
+  function fb(){
+    const ta=document.createElement('textarea');ta.value=s;ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;left:0;top:0;opacity:0;font-size:16px';document.body.appendChild(ta);
+    ta.focus();ta.select();ta.setSelectionRange(0,s.length);
+    let ok=false;try{ok=document.execCommand('copy');}catch(e){}
+    ta.remove();toast(ok?'Скопировано — вставьте в чат или журнал':'Не удалось скопировать: выделите текст вручную');
+  }
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(s).then(()=>toast('Скопировано — вставьте в чат или журнал'),fb);}else fb();
+}
+$('#bCopy').addEventListener('click',()=>{const t=full();if(!t){toast('Пока нечего копировать');return;}copyText(t);});
+if(navigator.share){
+  $('#bShare').hidden=false;
+  $('#bShare').addEventListener('click',()=>{
+    const t=full();if(!t){toast('Пока нечего отправлять');return;}
+    const fallback=()=>copyText(t);
+    try{
+      navigator.share({text:t}).catch(err=>{if(err&&err.name==='AbortError')return;fallback();});
+    }catch(e){fallback();}
+  });
+}
+let armed=false,armT;
+$('#bReset').addEventListener('click',e=>{
+  const b=e.currentTarget;
+  if(!armed){armed=true;b.textContent='Точно очистить?';b.classList.add('warn');armT=setTimeout(()=>{armed=false;b.textContent='Очистить';b.classList.remove('warn');},3500);return;}
+  clearTimeout(armT);armed=false;b.textContent='Очистить';b.classList.remove('warn');
+  fresh();save();renderAll();window.scrollTo(0,0);toast('Новый отзыв');
+});
+$('#name').addEventListener('input',e=>{S.name=e.target.value;renderPreview();save();});
+
+S=load()||fresh();
+renderAll();
+})();
+</script>
+<script>
+(function(){
+  try{
+    if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('./sw.js').catch(function(){});
+    if(/tgWebApp/.test(location.hash+location.search)){
+      var t=document.createElement('script');t.src='https://telegram.org/js/telegram-web-app.js';
+      t.onload=function(){try{Telegram.WebApp.ready();Telegram.WebApp.expand();}catch(e){}};
+      document.head.appendChild(t);
+    }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
