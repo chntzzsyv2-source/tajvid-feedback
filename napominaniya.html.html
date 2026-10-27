@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Напоминания учителям и менеджерам</title>
+<style>
+:root{--bg:#f2f5f3;--panel:#ffffff;--ink:#1d2a29;--mute:#5b6b69;--line:#d5dfdb;--main:#1e5b53;--main-ink:#ffffff;--soft:#e2eee9;--warn:#8a5a14;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a19;--panel:#1a2524;--ink:#e8f0ee;--mute:#9db0ac;--line:#2e3f3c;--main:#6fc2b3;--main-ink:#0e1b19;--soft:#223633;--warn:#e0b25c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121a19;--panel:#1a2524;--ink:#e8f0ee;--mute:#9db0ac;--line:#2e3f3c;--main:#6fc2b3;--main-ink:#0e1b19;--soft:#223633;--warn:#e0b25c;color-scheme:dark}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 40px}
+h1{font:600 26px/1.2 Georgia,"Times New Roman",serif;margin:8px 0 4px}
+p.sub{margin:0 0 18px;color:var(--mute)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 6px}
+label:first-child{margin-top:0}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+textarea{min-height:230px;resize:vertical;line-height:1.55}
+input:focus,select:focus,textarea:focus,button:focus-visible,a.btn:focus-visible{outline:3px solid var(--main);outline-offset:1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.row{grid-template-columns:1fr}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer}
+.chip b{margin-left:6px;color:var(--mute);font-weight:400}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+button,a.btn{font:inherit;font-weight:600;border-radius:10px;padding:11px 16px;border:1px solid var(--main);cursor:pointer;text-decoration:none;display:inline-block}
+.primary{background:var(--main);color:var(--main-ink)}
+.ghost{background:transparent;color:var(--main)}
+.note{font-size:13px;color:var(--mute);margin-top:10px}
+.warn{color:var(--warn)}
+#status{min-height:20px;font-size:14px;color:var(--main);margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+<h1>Напоминания учителям и менеджерам</h1>
+<p class="sub">Введи имя, выбери задачу — получишь готовое сообщение для чата.</p>
+
+<section class="card" aria-label="Кому и о чём">
+  <label for="addr">Обращение</label>
+  <select id="addr">
+    <option>Дорогая устаза</option>
+    <option>Дорогая сестра</option>
+    <option>Дорогая менеджер</option>
+  </select>
+  <label for="name">Имя или имя пользователя</label>
+  <input id="name" type="text" placeholder="например, Фатима" autocomplete="off">
+  <div class="actions" style="margin-top:8px"><button class="ghost" id="save" type="button">Сохранить имя в список</button></div>
+  <div class="chips" id="chips" aria-label="Сохранённые имена"></div>
+
+  <label for="task">О чём напомнить</label>
+  <select id="task"></select>
+  <div class="row">
+    <div><label for="what">Название (если нужно)</label><input id="what" type="text" placeholder="например, зачёт по красивой речи"></div>
+    <div><label for="when">Дата или срок</label><input id="when" type="text" placeholder="например, до пятницы 12:00"></div>
+  </div>
+</section>
+
+<section class="card" aria-label="Сообщение">
+  <label for="out">Сообщение (можно править)</label>
+  <textarea id="out"></textarea>
+  <div class="actions">
+    <button class="primary" id="copy" type="button">Копировать</button>
+    <button class="ghost" id="shuffle" type="button">Другая метафора</button>
+    <a class="btn ghost" id="tg" target="_blank" rel="noopener">Открыть в Telegram</a>
+  </div>
+  <div id="status" role="status"></div>
+  <p class="note">Метафоры предложены ИИ, это не цитаты. Измени любую фразу в поле выше или добавь свою в список ниже.</p>
+</section>
+
+<section class="card" aria-label="Свои фразы">
+  <label for="mine">Своя метафора или выражение</label>
+  <input id="mine" type="text" placeholder="Напиши фразу и нажми «Добавить»">
+  <div class="actions"><button class="ghost" id="addm" type="button">Добавить в мой список</button></div>
+  <p class="note" id="mcount"></p>
+</section>
+</main>
+<script>
+var TASKS=[
+{id:'journal',t:'Заполнить журнал',b:function(w,d){return 'не забудьте заполнить журнал'+(w?' ('+w+')':'')+(d?' '+d:'')+'.';},m:['Журнал, как карта пути: пока он заполнен, ни одна ученица не потеряется.','Запись, сделанная сегодня, избавит от поисков завтра.']},
+{id:'digest',t:'Дайджест недели (пятница → понедельник)',b:function(w,d){return 'в пятницу нужно составить дайджест недели, чтобы он вышел в понедельник'+(d?' ('+d+')':'')+'.';},m:['Дайджест, как мост между пятницей и понедельником: чем крепче он выстроен, тем спокойнее по нему идти.','Вовремя собранный итог недели помогает начать новую без суеты.']},
+{id:'exam',t:'Экзамен или зачёт: даты и экзаменатор (за 5 дней)',b:function(w,d){return 'через 5 дней — '+(w||'зачёт или экзамен')+(d?', '+d:'')+'. Проверьте, пожалуйста, даты в таблице и назначен ли экзаменатор.';},m:['Хорошо подготовленная встреча как заранее собранный урожай: потом остаётся только порадоваться.','Пять дней впереди — это время, которое можно потратить на подготовку, а не на спешку.']},
+{id:'questions',t:'Ответить на вопросы учителей',b:function(w,d){return 'учителя ждут ответов на свои вопросы'+(w?' ('+w+')':'')+(d?' '+d:'')+'.';},m:['Ответ, данный вовремя, как глоток воды в пути: он возвращает силы.','Вопрос без ответа, как дверь без ручки: войти можно, но неудобно.']},
+{id:'calendar',t:'Проверить календарь и план программ',b:function(w,d){return 'проверьте календарь и план программ'+(w?' ('+w+')':'')+(d?' '+d:'')+'.';},m:['План, как русло реки: когда оно ясное, вода течёт без разливов.','Календарь, сверенный вовремя, бережёт силы всей школы.']},
+{id:'newgroup',t:'Заполнить журнал для новой группы или курса',b:function(w,d){return 'заполните журнал для новой группы или курса'+(w?' ('+w+')':'')+(d?' '+d:'')+'.';},m:['Новая группа, как посаженное дерево: чем раньше закреплены корни, тем крепче ствол.','Хорошее начало — половина дороги.']},
+{id:'replace',t:'Подтвердить замену учителя',b:function(w,d){return 'подтвердите, пожалуйста, замену'+(w?' ('+w+')':'')+(d?' '+d:'')+'.';},m:['Замена, подтверждённая вовремя, как подставленное плечо: ученицы не заметят, что что-то менялось.','Предупреждённая группа спокойнее шагает.']},
+{id:'pay',t:'Оплата: напомнить во все группы (за 3 дня)',b:function(w,d){return 'через 3 дня оплата за '+(w||'месяц обучения')+(d?' ('+d+')':'')+'. Отправьте, пожалуйста, напоминание во все свои группы.';},m:['Дело, сделанное вовремя, как вовремя собранный урожай: потом не нужно догонять.','Напоминание, отправленное заранее, избавляет всех от спешки.']},
+{id:'report',t:'Отправить отчёт руководителю',b:function(w,d){return 'отправьте, пожалуйста, отчёт руководителю'+(w?' ('+w+')':'')+(d?' '+d:'')+'.';},m:['Отчёт, как зеркало: вовремя заглянул — видно, что поправить.','Итог, подведённый в срок, помогает видеть путь целиком.']}
+];
+var GEN=['Задача, сделанная вовремя, как дождь в нужный сезон: всему вокруг от неё легче.','Маленький шаг сегодня лучше большого рывка завтра: дорога складывается из шагов, сделанных вовремя.','Время, как песок в часах: его не остановить, но его можно наполнить пользой.','Дело, отложенное на завтра, обрастает мхом; дело, сделанное сегодня, остаётся лёгким.','Как в оркестре: одна вовремя вступившая нота даёт звучание всем.'];
+var CLOSE='Пусть ваш труд принесёт пользу ученицам!';
+var $=function(i){return document.getElementById(i)};
+var idx=0;
+function store(k,v){try{if(v===undefined){return JSON.parse(localStorage.getItem(k)||'null')}localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+var names=store('names')||[], mine=store('mine')||[];
+function task(){return TASKS[$('task').selectedIndex]}
+function build(){
+  var t=task(), pool=t.m.concat(GEN).concat(mine), m=pool[idx%pool.length];
+  var nm=$('name').value.trim();
+  var msg=$('addr').value+(nm?' '+nm:'')+', ассаляму алейкум! '+cap(t.b($('what').value.trim(),$('when').value.trim()))+'\n\n'+m+'\n\n'+CLOSE;
+  $('out').value=msg; link();
+}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function link(){$('tg').href='https://t.me/share/url?url=%20&text='+encodeURIComponent($('out').value)}
+function say(s){$('status').textContent=s;setTimeout(function(){$('status').textContent=''},2500)}
+function chips(){var c=$('chips');c.innerHTML='';names.forEach(function(n,i){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=n.name;var x=document.createElement('b');x.textContent='×';x.title='Удалить';x.onclick=function(e){e.stopPropagation();names.splice(i,1);store('names',names);chips()};b.appendChild(x);b.onclick=function(){$('name').value=n.name;$('addr').value=n.addr;build()};c.appendChild(b)});
+  if(!names.length){c.innerHTML='<span class="note">Список пока пуст: введи имя и нажми «Сохранить имя в список».</span>'}}
+function mc(){$('mcount').textContent=mine.length?('Твоих фраз: '+mine.length+'. Они появляются среди метафор.'):'Пока нет своих фраз.'}
+TASKS.forEach(function(t){var o=document.createElement('option');o.textContent=t.t;$('task').appendChild(o)});
+['addr','name','task','what','when'].forEach(function(i){$(i).addEventListener('input',function(){if(i==='task')idx=0;build()})});
+$('out').addEventListener('input',link);
+$('shuffle').onclick=function(){idx++;build()};
+$('save').onclick=function(){var n=$('name').value.trim();if(!n){say('Сначала введи имя.');return}if(!names.some(function(x){return x.name===n})){names.push({name:n,addr:$('addr').value});store('names',names);chips();say('Имя сохранено.')}};
+$('addm').onclick=function(){var v=$('mine').value.trim();if(!v){say('Напиши фразу.');return}mine.push(v);store('mine',mine);$('mine').value='';mc();say('Фраза добавлена.')};
+$('copy').onclick=function(){var t=$('out').value;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){say('Скопировано.')},fb)}else fb();function fb(){$('out').select();try{document.execCommand('copy');say('Скопировано.')}catch(e){say('Выдели текст и скопируй вручную.')}}};
+chips();mc();build();
+</script>
+</body>
+</html>
