@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Конструктор замен</title>
+<style>
+:root{--bg:#f2f5f3;--panel:#fff;--ink:#1d2a29;--mute:#5b6b69;--line:#d5dfdb;--main:#1e5b53;--mi:#fff;--soft:#e2eee9;--bad:#a33a2a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a19;--panel:#1a2524;--ink:#e8f0ee;--mute:#9db0ac;--line:#2e3f3c;--main:#6fc2b3;--mi:#0e1b19;--soft:#223633;--bad:#e58a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121a19;--panel:#1a2524;--ink:#e8f0ee;--mute:#9db0ac;--line:#2e3f3c;--main:#6fc2b3;--mi:#0e1b19;--soft:#223633;--bad:#e58a7a;color-scheme:dark}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:680px;margin:0 auto;padding:20px 16px 40px}
+h1{font:600 26px/1.2 Georgia,"Times New Roman",serif;margin:8px 0 4px}
+h2{font:600 17px/1.3 Georgia,serif;margin:0 0 10px}
+p.sub{margin:0 0 16px;color:var(--mute)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 6px}
+label:first-of-type{margin-top:0}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+textarea{line-height:1.55;resize:vertical}
+#out{min-height:240px}#tpl{min-height:190px;font-size:14px}#ust{min-height:0}
+input:focus,select:focus,textarea:focus,button:focus-visible,a.btn:focus-visible{outline:3px solid var(--main);outline-offset:1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+button,a.btn{font:inherit;font-weight:600;font-size:15px;border-radius:10px;padding:10px 14px;border:1px solid var(--main);cursor:pointer;text-decoration:none;display:inline-block;background:transparent;color:var(--main)}
+.primary{background:var(--main);color:var(--mi)}
+.danger{border-color:var(--bad);color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:400}
+.chip.on{background:var(--soft);border-color:var(--main);font-weight:600}
+.chip b{margin-left:8px;color:var(--mute);font-weight:400}
+.note{font-size:13px;color:var(--mute);margin:8px 0 0}
+#status{min-height:20px;font-size:14px;color:var(--main);margin-top:8px}
+.item{display:flex;justify-content:space-between;gap:10px;align-items:center;border-top:1px solid var(--line);padding:8px 0}
+.item:first-child{border-top:0}
+</style>
+</head>
+<body>
+<main>
+<h1>Конструктор замен</h1>
+<p class="sub">Выбери направление, заполни поля — получишь сообщение в учительскую.</p>
+
+<section class="card">
+  <h2>Что нужно заменить</h2>
+  <label for="dir">Направление</label>
+  <select id="dir"></select>
+  <div class="row">
+    <div><label for="group">Группа</label><input id="group" placeholder="например, И-17"></div>
+    <div><label for="when">День и время</label><input id="when" placeholder="среду и пятницу в 18:00"></div>
+  </div>
+  <label for="topic">Что читают / тема</label><input id="topic" placeholder="например, Бакару">
+  <div class="row">
+    <div><label for="lesson">Урок</label><input id="lesson" placeholder="ссылка или номер"></div>
+    <div><label for="slides">Презентация</label><input id="slides" placeholder="ссылка"></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Устазы (имена пользователей)</h2>
+  <label for="ust">Добавить имя пользователя</label>
+  <input id="ust" placeholder="@имя (можно без @)">
+  <div class="actions"><button id="ustadd" type="button">Добавить</button><button id="ustall" type="button">Выбрать всех</button><button id="ustnone" type="button">Снять выбор</button></div>
+  <div class="chips" id="ustchips"></div>
+  <p class="note">Нажми на имя, чтобы включить или выключить его в сообщении. Крестик удаляет из списка. Выбранные имена идут в ряд.</p>
+</section>
+
+<section class="card">
+  <h2>Сообщение</h2>
+  <textarea id="out" aria-label="Сообщение"></textarea>
+  <div class="actions">
+    <button class="primary" id="copy" type="button">Копировать</button>
+    <a class="btn" id="tg" target="_blank" rel="noopener">Открыть в Telegram</a>
+    <button id="savemsg" type="button">Сохранить замену</button>
+  </div>
+  <div id="status" role="status"></div>
+</section>
+
+<section class="card">
+  <h2>Шаблон направления</h2>
+  <label for="tpl">Текст шаблона (можно править)</label>
+  <textarea id="tpl"></textarea>
+  <p class="note">Подстановки: {направление} {группа} {когда} {тема} {урок} {презентация} {устазы}. Строка с пустой подстановкой не попадает в сообщение.</p>
+  <div class="actions"><button id="tplsave" type="button">Сохранить шаблон</button><button id="tplreset" type="button">Исходный шаблон</button></div>
+  <label for="dname">Название направления</label>
+  <input id="dname">
+  <div class="actions"><button id="dadd" type="button">Добавить направление</button><button id="dren" type="button">Переименовать</button><button id="ddel" class="danger" type="button">Удалить</button></div>
+</section>
+
+<section class="card">
+  <h2>Сохранённые замены</h2>
+  <div id="saved"></div>
+</section>
+</main>
+<script>
+var DEFT='Ассаляму алейкум уа рахматуллахи уа баракатух.\n\nДорогие устазы, {направление}, группа {группа}: на {когда} нужна замена.\nОни читают {тема}.\nУрок: {урок}\nПрезентация: {презентация}\n\nКто сможет? Напишите, пожалуйста, здесь.\n{устазы}';
+var DIRS0=['Институт · 2 курс (двухгодичный)','Институт · 3 курс (одногодичный)','Институт · 3 курс (двухгодичный)','Школа · Продвинутый курс','Школа · Базовый курс','Школа · Коран от А до Я','Хатм Корана','Хифз'];
+var $=function(i){return document.getElementById(i)};
+function ld(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var dirs=ld('dirs',null)||DIRS0.map(function(n){return{name:n,tpl:DEFT}});
+var ust=ld('ust',[]), saved=ld('saved',[]), cur=0;
+function say(s){$('status').textContent=s;setTimeout(function(){$('status').textContent=''},2500)}
+function drawDirs(){var s=$('dir');s.innerHTML='';dirs.forEach(function(d,i){var o=document.createElement('option');o.textContent=d.name;s.appendChild(o)});s.selectedIndex=cur;loadTpl()}
+function loadTpl(){var d=dirs[cur];if(!d)return;$('tpl').value=d.tpl;$('dname').value=d.name;build()}
+function build(){
+  var d=dirs[cur];if(!d){$('out').value='';return}
+  var sel=ust.filter(function(u){return u.on}).map(function(u){return u.n}).join(' ');
+  var v={'направление':d.name,'группа':$('group').value,'когда':$('when').value,'тема':$('topic').value,'урок':$('lesson').value,'презентация':$('slides').value,'устазы':sel};
+  var out=[];
+  $('tpl').value.split('\n').forEach(function(l){var miss=false,has=/\{[^}]+\}/.test(l);
+    var r=l.replace(/\{([^}]+)\}/g,function(m,k){if(!(k in v))return m;var x=String(v[k]).trim();if(!x)miss=true;return x});
+    if(!(has&&miss))out.push(r)});
+  $('out').value=out.join('\n').replace(/\n{3,}/g,'\n\n').trim();link()
+}
+function link(){$('tg').href='https://t.me/share/url?url=%20&text='+encodeURIComponent($('out').value)}
+function drawUst(){var c=$('ustchips');c.innerHTML='';
+  if(!ust.length){c.innerHTML='<span class="note">Список пуст: добавь первое имя.</span>';return}
+  ust.forEach(function(u,i){var b=document.createElement('button');b.type='button';b.className='chip'+(u.on?' on':'');b.textContent=u.n;b.setAttribute('aria-pressed',u.on?'true':'false');
+    var x=document.createElement('b');x.textContent='×';x.title='Удалить';x.onclick=function(e){e.stopPropagation();ust.splice(i,1);sv('ust',ust);drawUst();build()};
+    b.appendChild(x);b.onclick=function(){u.on=!u.on;sv('ust',ust);drawUst();build()};c.appendChild(b)})}
+function drawSaved(){var c=$('saved');c.innerHTML='';
+  if(!saved.length){c.innerHTML='<p class="note">Пока пусто. Нажми «Сохранить замену» под сообщением.</p>';return}
+  saved.forEach(function(s,i){var r=document.createElement('div');r.className='item';var t=document.createElement('span');t.textContent=s.title;
+    var a=document.createElement('span');var l=document.createElement('button');l.type='button';l.textContent='Открыть';l.onclick=function(){var f=s.f;cur=Math.min(f.dir,dirs.length-1);['group','when','topic','lesson','slides'].forEach(function(k){$(k).value=f[k]||''});drawDirs();say('Загружено.')};
+    var d=document.createElement('button');d.type='button';d.className='danger';d.textContent='Удалить';d.style.marginLeft='6px';d.onclick=function(){saved.splice(i,1);sv('saved',saved);drawSaved()};
+    a.appendChild(l);a.appendChild(d);r.appendChild(t);r.appendChild(a);c.appendChild(r)})}
+['group','when','topic','lesson','slides','tpl'].forEach(function(i){$(i).addEventListener('input',build)});
+$('out').addEventListener('input',link);
+$('dir').onchange=function(){cur=$('dir').selectedIndex;loadTpl()};
+$('ustadd').onclick=function(){var n=$('ust').value.trim();if(!n){say('Введи имя пользователя.');return}if(n.charAt(0)!=='@')n='@'+n;if(!ust.some(function(u){return u.n===n})){ust.push({n:n,on:true});sv('ust',ust)}$('ust').value='';drawUst();build()};
+$('ustall').onclick=function(){ust.forEach(function(u){u.on=true});sv('ust',ust);drawUst();build()};
+$('ustnone').onclick=function(){ust.forEach(function(u){u.on=false});sv('ust',ust);drawUst();build()};
+$('tplsave').onclick=function(){dirs[cur].tpl=$('tpl').value;sv('dirs',dirs);say('Шаблон сохранён.')};
+$('tplreset').onclick=function(){$('tpl').value=DEFT;dirs[cur].tpl=DEFT;sv('dirs',dirs);build();say('Возвращён исходный шаблон.')};
+$('dadd').onclick=function(){var n=$('dname').value.trim();if(!n){say('Введи название.');return}dirs.push({name:n,tpl:DEFT});cur=dirs.length-1;sv('dirs',dirs);drawDirs();say('Направление добавлено.')};
+$('dren').onclick=function(){var n=$('dname').value.trim();if(!n||!dirs[cur]){say('Введи название.');return}dirs[cur].name=n;sv('dirs',dirs);drawDirs();say('Переименовано.')};
+$('ddel').onclick=function(){if(!dirs[cur])return;if(dirs.length<2){say('Нужно оставить хотя бы одно направление.');return}dirs.splice(cur,1);cur=0;sv('dirs',dirs);drawDirs();say('Удалено.')};
+$('savemsg').onclick=function(){var f={dir:cur};['group','when','topic','lesson','slides'].forEach(function(k){f[k]=$(k).value});
+  saved.unshift({title:(dirs[cur]?dirs[cur].name:'')+(f.group?' · '+f.group:'')+(f.when?' · '+f.when:''),f:f});saved=saved.slice(0,30);sv('saved',saved);drawSaved();say('Замена сохранена.')};
+$('copy').onclick=function(){var t=$('out').value;
+  function fb(){$('out').select();try{document.execCommand('copy');say('Скопировано.')}catch(e){say('Выдели текст и скопируй вручную.')}}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){say('Скопировано.')},fb)}else fb()};
+drawDirs();drawUst();drawSaved();
+</script>
+</body>
+</html>
